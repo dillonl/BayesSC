@@ -7,8 +7,8 @@
 
 namespace scbayes
 {
-	VCF::VCF(const std::string& path) :
-		m_path(path)
+	VCF::VCF(const std::string& path, BarCodeContainer::SharedPtr barcodeContainerPtr) :
+		m_path(path), m_barcode_container_ptr(barcodeContainerPtr)
 	{
 		if (!fileExists(m_path, false))
 		{
@@ -21,11 +21,11 @@ namespace scbayes
 	{
 	}
 
-	Variant::SharedPtr VCF::getVariantFromLine(const std::string& vcfLine)
+	Variant::SharedPtr VCF::getVariantFromLine(const std::string& vcfLine, uint32_t lineNumber)
 	{
 		std::vector< std::string > lineSplit;
 		split(vcfLine, '\t', lineSplit);
-		return std::make_shared< Variant >(lineSplit[0], std::stoi(lineSplit[1]), lineSplit[3], lineSplit[4]);
+		return std::make_shared< Variant >(lineSplit[0], std::stoi(lineSplit[1]), lineSplit[3], lineSplit[4], this->m_barcode_container_ptr->getBarCodeCount(), lineNumber);
 	}
 
 	std::vector< Variant::SharedPtr > VCF::getVariants(Region::SharedPtr regionPtr)
@@ -37,22 +37,25 @@ namespace scbayes
 		size_t len = 0;
 		ssize_t read;
 
+
 		fp = fopen(this->m_path.c_str(), "r");
 		if (fp == NULL)
 		{
 			std::cout << m_path << " is not a valid file" << std::endl;
 			exit(0);
 		}
+		uint32_t lineNumber = 0;
 		while ((read = getline(&line, &len, fp)) != -1)
 		{
 			if (len == 0 || line[0] == '#')
 			{
 				continue;
 			}
-			auto variantPtr = getVariantFromLine(std::string(line));
-			if (regionPtr == nullptr || (regionPtr->getReferenceID().compare(variantPtr->getChrom()) && regionPtr->getStartPosition() <= (variantPtr->getPosition() + variantPtr->getRef().size()) && variantPtr->getPosition() <= regionPtr->getEndPosition()))
+			auto variantPtr = getVariantFromLine(std::string(line), lineNumber);
+			if (regionPtr == nullptr || (regionPtr->getReferenceID().compare(variantPtr->getChrom()) && regionPtr->getStartPosition(Region::BASED::ONE) <= (variantPtr->getPosition() + variantPtr->getRef().size()) && variantPtr->getPosition() <= regionPtr->getEndPosition(Region::BASED::ONE)))
 			{
 				variants.emplace_back(variantPtr);
+				++lineNumber;
 			}
 		}
 		free(line);

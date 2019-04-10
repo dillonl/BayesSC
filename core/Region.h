@@ -28,8 +28,8 @@ namespace scbayes
 
 		std::string getRegionString() const { return m_region_string; }
 		std::string getReferenceID() const { return this->m_reference_id; }
-		uint32_t getStartPosition() const { return this->m_start_position; }
-		uint32_t getEndPosition() const { return this->m_end_position; }
+		uint32_t getStartPosition(BASED based);
+		uint32_t getEndPosition(BASED based);
 		void setStartPosition(uint32_t startPosition) { this->m_start_position = startPosition; }
 		void setEndPosition(uint32_t endPosition) { this->m_end_position = endPosition; }
 		BASED getBased() { return m_based; }

@@ -2,7 +2,8 @@
 #include "core/VCF.h"
 #include "core/Variant.h"
 #include "core/BamReader.h"
-#include "core/BarCodeParser.h"
+#include "core/VariantFileWriter.h"
+#include "core/BarCodeContainer.h"
 
 #include <iostream>
 
@@ -21,12 +22,14 @@ int main(int argc, char** argv)
 	auto barcodePath = params.getBarCodePath();
 	auto regionPtr = params.getRegion();
 
-	auto barcodeParser = std::make_shared< scbayes::BarCodeParser >(barcodePath);
-	auto barcodes = barcodeParser->getBarCodes();
-	auto vcf = std::make_shared< scbayes::VCF >(vcfPath);
-	auto variants = vcf->getVariants(regionPtr);
+	auto barcodeContainerPtr = std::make_shared< scbayes::BarCodeContainer >(barcodePath);
+	auto vcf = std::make_shared< scbayes::VCF >(vcfPath, barcodeContainerPtr);
+	auto variantPtrs = vcf->getVariants(regionPtr);
 
 	// now do the bam magic
-
+	scbayes::BamReader::SharedPtr bamReaderPtr = std::make_shared< scbayes::BamReader >(bamPath, barcodeContainerPtr);
+	bamReaderPtr->processVariants(variantPtrs);
+	auto variantFileWriterPtr = std::make_shared< scbayes::VariantFileWriter >(variantPtrs, barcodeContainerPtr);
+	variantFileWriterPtr->writeToCSV("variant_ref_matrix.csv", "variant_alt_matrix.csv", "variant_bin_matrix.csv", '\t');
 	return 0;
 }

@@ -1,4 +1,4 @@
-#include "BarCodeParser.h"
+#include "BarCodeContainer.h"
 #include "Utils.h"
 
 #include <iostream>
@@ -7,15 +7,29 @@
 
 namespace scbayes
 {
-	BarCodeParser::BarCodeParser(const std::string& path):
+	BarCodeContainer::BarCodeContainer(const std::string& path):
 		m_path(path)
 	{
+		initBarCodes();
+	}
+	BarCodeContainer::~BarCodeContainer() {}
+
+	uint32_t BarCodeContainer::getBarCodeID(const std::string& barcode)
+	{
+		auto iter = this->m_barcode_with_order_map.find(barcode);
+		if (iter != this->m_barcode_with_order_map.end())
+		{
+			iter->second;
+		}
+		else
+		{
+			return 0;
+		}
 	}
 
-    std::vector< std::string > BarCodeParser::getBarCodes()
+    void BarCodeContainer::initBarCodes()
 	{
-		std::cout << "path: " << m_path << std::endl;
-        std::vector< std::string > barcodes;
+		this->m_barcode_with_order_map.clear();
 
 		FILE* fp;
 		char* line = (char*)malloc(sizeof(char) * 5000); // reserve for 5k line of chars, probably can't use this with RUFUS :p
@@ -38,10 +52,9 @@ namespace scbayes
 			}
 			std::vector< std::string > lineSplit;
 			split(line, ',', lineSplit);
-			barcodes.emplace_back(lineSplit[0]);
+			this->m_barcode_with_order_map.emplace(lineSplit[0], count);
+			m_barcodes.emplace_back(lineSplit[0]);
 		}
 		free(line);
-
-		return barcodes;
 	}
 }

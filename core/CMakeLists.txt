@@ -1,4 +1,5 @@
 INCLUDE_DIRECTORIES(
+    ${HTSLIB_INCLUDE}
     ${BAMTOOLS_INCLUDE}
 	${ZLIB_INCLUDE}
 	${CXXOPTS_INCLUDE}
@@ -20,12 +21,14 @@ add_library(scbayes_core STATIC
   Region.cpp
   Params.cpp
   Utils.cpp
-  BarCodeParser.cpp
+  VariantFileWriter.cpp
+  BarCodeContainer.cpp
   )
 
 SET(CORE_LIB scbayes_core CACHE STRING "THE CORE LIBRARY") #add scbayes_core and scbayes_utils to the list of core libs
 
 TARGET_LINK_LIBRARIES(${CORE_LIB}
+  ${HTSLIB_LIBRARY}
   ${BAMTOOLS_LIB}
   ${BAMTOOLS_UTIL_LIB}
   ${ZLIB_LIBRARY}

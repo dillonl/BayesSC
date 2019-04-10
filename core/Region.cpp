@@ -63,4 +63,36 @@ namespace scbayes
 	{
 		m_based = based;
 	}
+
+	uint32_t Region::getStartPosition(BASED based)
+	{
+		if (m_based == based)
+		{
+			return this->m_start_position;
+		}
+		else if (m_based == BASED::ZERO)
+		{
+			return this->m_start_position - 1;
+		}
+		else // must be based one
+		{
+			return this->m_start_position + 1;
+		}
+	}
+
+	uint32_t Region::getEndPosition(BASED based)
+	{
+		if (m_based == based)
+		{
+			return this->m_end_position;
+		}
+		else if (m_based == BASED::ZERO)
+		{
+			return this->m_end_position - 1;
+		}
+		else // must be based one
+		{
+			return this->m_end_position + 1;
+		}
+	}
 }
