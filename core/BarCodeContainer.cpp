@@ -14,17 +14,9 @@ namespace scbayes
 	}
 	BarCodeContainer::~BarCodeContainer() {}
 
-	uint32_t BarCodeContainer::getBarCodeID(const std::string& barcode)
+	bool BarCodeContainer::doesBarCodeExist(const std::string& barcode)
 	{
-		auto iter = this->m_barcode_with_order_map.find(barcode);
-		if (iter != this->m_barcode_with_order_map.end())
-		{
-			iter->second;
-		}
-		else
-		{
-			return 0;
-		}
+	    return (this->m_barcode_with_order_map.find(barcode) != this->m_barcode_with_order_map.end());
 	}
 
     void BarCodeContainer::initBarCodes()

@@ -42,20 +42,23 @@ namespace scbayes
 		}
 		for (auto variantPtr : this->m_variant_ptrs)
 		{
-			auto refCounts = variantPtr->getBarCodeRefCounts();
-			auto altCounts = variantPtr->getBarCodeAltCounts();
+			// auto refCounts = variantPtr->getBarCodeRefCounts();
+			// auto altCounts = variantPtr->getBarCodeAltCounts();
 			fprintf(fpRef, "%s", variantPtr->getKey().c_str());
 			fprintf(fpAlt, "%s", variantPtr->getKey().c_str());
 			fprintf(fpBin, "%s", variantPtr->getKey().c_str());
-			for (auto i = 0; i < refCounts.size(); ++i)
+			//for (auto i = 0; i < refCounts.size(); ++i)
+			for (auto barcode : barcodes)
 			{
-				fprintf(fpRef, "%c%d", separator, refCounts[i]);
-				fprintf(fpAlt, "%c%d", separator, altCounts[i]);
-				if (altCounts[i] > 0)
+				auto refCount = variantPtr->getAltCount(barcode);
+				auto altCount = variantPtr->getRefCount(barcode);
+				fprintf(fpRef, "%c%d", separator, refCount);
+				fprintf(fpAlt, "%c%d", separator, altCount);
+				if (altCount > 0)
 				{
 					fprintf(fpBin, "%c1", separator);
 				}
-				else if (refCounts[i] > 0)
+				else if (refCount > 0)
 				{
 					fprintf(fpBin, "%c0", separator);
 				}

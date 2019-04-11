@@ -4,6 +4,7 @@
 #include "Region.h"
 
 #include <memory>
+#include <unordered_map>
 namespace scbayes
 {
 	class Variant
@@ -23,14 +24,14 @@ namespace scbayes
 		std::string getAlt() { return this->m_alt; }
 		uint32_t getPosition() { return this->m_position; }
 
-		void incrementRefCounter(uint32_t barcodeID);
-		void incrementAltCounter(uint32_t barcodeID);
+		void incrementRefCounter(const std::string& barcode);
+		void incrementAltCounter(const std::string& barcode);
+
+		uint32_t getRefCount(const std::string& barcode);
+		uint32_t getAltCount(const std::string& barcode);
 
 		Region::SharedPtr getRegionPtr() { return this->m_region_ptr; }
 		std::string getKey() { return this->m_chrom + ":" + std::to_string(this->m_position) + ":" + this->m_ref + ":" + this->m_alt; }
-
-		std::vector< uint32_t > getBarCodeRefCounts() { return m_barcode_ref_read_counts; }
-		std::vector< uint32_t > getBarCodeAltCounts() { return m_barcode_alt_read_counts; }
 
 	private:
 		std::string m_chrom;
@@ -39,7 +40,7 @@ namespace scbayes
 		uint32_t m_position;
 		uint32_t m_line_number;
 		Region::SharedPtr m_region_ptr;
-		std::vector< uint32_t > m_barcode_ref_read_counts;
-		std::vector< uint32_t > m_barcode_alt_read_counts;
+		std::unordered_map< std::string, uint32_t > m_barcode_ref_read_counts;
+		std::unordered_map< std::string, uint32_t > m_barcode_alt_read_counts;
 	};
 }

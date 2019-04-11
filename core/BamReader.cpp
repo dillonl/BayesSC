@@ -53,23 +53,21 @@ namespace scbayes
 			if (bamtoolsAlignmentPtr->AlignedBases.find('N') != std::string::npos) { continue; }
 			bool isInRegion = (bamtoolsAlignmentPtr->Position <= startPosition && startPosition <= (bamtoolsAlignmentPtr->Position + bamtoolsAlignmentPtr->Length));
 			std::string alignmentBarcode;
-			uint32_t barcodeID = 0;
-
-			if (isInRegion && bamtoolsAlignmentPtr->GetTag("CB", alignmentBarcode) && (barcodeID = this->m_bar_code_container->getBarCodeID(alignmentBarcode) > 0))
+			if (isInRegion && bamtoolsAlignmentPtr->GetTag("CB", alignmentBarcode) && this->m_bar_code_container->doesBarCodeExist(alignmentBarcode))
 			{
                 uint32_t offset = (startPosition - bamtoolsAlignmentPtr->Position) - 1;
 
 				std::string alignmentSequenceRefLength = bamtoolsAlignmentPtr->QueryBases.substr(offset, variantPtr->getRef().size());
 				if (alignmentSequenceRefLength.compare(variantPtr->getRef()) == 0)
 				{
-					variantPtr->incrementRefCounter(barcodeID);
+					variantPtr->incrementRefCounter(alignmentBarcode);
 				}
 				else
 				{
 					std::string alignmentSequenceAltLength = bamtoolsAlignmentPtr->QueryBases.substr(offset, variantPtr->getAlt().size());
 					if (alignmentSequenceAltLength.compare(variantPtr->getAlt()) == 0)
 					{
-						variantPtr->incrementAltCounter(barcodeID);
+						variantPtr->incrementAltCounter(alignmentBarcode);
 					}
 				}
 			}

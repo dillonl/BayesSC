@@ -19,7 +19,7 @@ namespace scbayes
 		BarCodeContainer(const std::string& path);
 		~BarCodeContainer();
 
-		uint32_t getBarCodeID(const std::string& barcode);
+		bool doesBarCodeExist(const std::string& barcode);
 
 		size_t getBarCodeCount() { return this->m_barcode_with_order_map.size(); }
 		std::vector< std::string > getBarCodes() { return m_barcodes; }
