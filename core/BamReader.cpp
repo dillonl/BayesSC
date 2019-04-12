@@ -53,11 +53,33 @@ namespace scbayes
 			if (bamtoolsAlignmentPtr->AlignedBases.find('N') != std::string::npos) { continue; }
 			bool isInRegion = (bamtoolsAlignmentPtr->Position <= startPosition && startPosition <= (bamtoolsAlignmentPtr->Position + bamtoolsAlignmentPtr->Length));
 			std::string alignmentBarcode;
-			if (isInRegion && bamtoolsAlignmentPtr->GetTag("CB", alignmentBarcode) && this->m_bar_code_container->doesBarCodeExist(alignmentBarcode))
+			std::string umi;
+			bamtoolsAlignmentPtr->GetTag("UB", umi);
+			if (isInRegion && !bamtoolsAlignmentPtr->IsDuplicate() && bamtoolsAlignmentPtr->GetTag("CB", alignmentBarcode) && this->m_bar_code_container->doesBarCodeExist(alignmentBarcode))
 			{
-                uint32_t offset = (startPosition - bamtoolsAlignmentPtr->Position) - 1;
-
+                uint32_t offset = (startPosition - bamtoolsAlignmentPtr->Position);
 				std::string alignmentSequenceRefLength = bamtoolsAlignmentPtr->QueryBases.substr(offset, variantPtr->getRef().size());
+				/*
+				static std::mutex l;
+				l.lock();
+				if (alignmentBarcode.compare("CTACCCACAACGATGG-1") == 0)
+				{
+					std::string alignmentSequenceAltLength = bamtoolsAlignmentPtr->QueryBases.substr(offset, variantPtr->getAlt().size());
+					std::cout << "--------------------" << std::endl;
+					std::cout << "offset: " << offset << std::endl;
+					std::cout << "UMI: " << umi << std::endl;
+					std::cout << "Position: " << bamtoolsAlignmentPtr->Position << std::endl;
+					std::cout << variantPtr->getKey() << std::endl;
+					std::cout << alignmentSequenceRefLength << std::endl;
+					std::cout << bamtoolsAlignmentPtr->QueryBases << std::endl;
+					if (alignmentSequenceAltLength.compare(variantPtr->getAlt()) == 0)
+					{
+						std::cout << "incremented" << std::endl;
+					}
+					std::cout << "--------------------" << std::endl;
+				}
+				l.unlock();
+				*/
 				if (alignmentSequenceRefLength.compare(variantPtr->getRef()) == 0)
 				{
 					variantPtr->incrementRefCounter(alignmentBarcode);
@@ -70,6 +92,9 @@ namespace scbayes
 						variantPtr->incrementAltCounter(alignmentBarcode);
 					}
 				}
+
+
+
 			}
 		}
 		delete bamtoolsAlignmentPtr;

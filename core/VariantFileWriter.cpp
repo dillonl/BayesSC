@@ -18,6 +18,20 @@ namespace scbayes
 
 	void VariantFileWriter::writeToCSV(const std::string& ref_filename, const std::string& alt_filename, const std::string& bin_filename, char separator)
 	{
+		/*
+		for (auto variantPtr : this->m_variant_ptrs)
+		{
+			if (variantPtr->getKey().compare("1:40779145:G:A") == 0)
+			{
+				auto refCount = variantPtr->getRefCount("CTACCCACAACGATGG-1");
+				auto altCount = variantPtr->getAltCount("CTACCCACAACGATGG-1");
+				std::cout << "dillons output" << std::endl;
+				std::cout << "ref: " << refCount << std::endl;
+				std::cout << "alt: " << altCount << std::endl;
+			}
+		}
+		*/
+
 		FILE* fpRef;
 		FILE* fpAlt;
 		FILE* fpBin;
@@ -50,8 +64,8 @@ namespace scbayes
 			//for (auto i = 0; i < refCounts.size(); ++i)
 			for (auto barcode : barcodes)
 			{
-				auto refCount = variantPtr->getAltCount(barcode);
-				auto altCount = variantPtr->getRefCount(barcode);
+				auto refCount = variantPtr->getRefCount(barcode);
+				auto altCount = variantPtr->getAltCount(barcode);
 				fprintf(fpRef, "%c%d", separator, refCount);
 				fprintf(fpAlt, "%c%d", separator, altCount);
 				if (altCount > 0)
